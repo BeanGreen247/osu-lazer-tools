@@ -1,14 +1,23 @@
 # osu-lazer-tools
 
-Tools for **osu!lazer on Linux**, for players, mappers and developers. Works on any distro and any PC;
-nothing here is tied to specific hardware. Also bundled as a module in
-[TuxThrottle](https://github.com/BeanGreen247/tuxthrottle) (Setup Games → osu!lazer).
+[![CI](https://github.com/BeanGreen247/osu-lazer-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/BeanGreen247/osu-lazer-tools/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Platform: Linux](https://img.shields.io/badge/platform-Linux-informational)
+![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-informational)
+
+Tools for **osu!lazer on Linux**, for players, mappers and developers: a low-latency launcher, a latency
+dashboard, replay analysis with unstable rate and hit-error graphs, a tapping test, a tablet setup checker,
+a skin checker, backups, a mapset checker, mapping helpers, and a build-from-source helper. Works on any distro
+and any PC; nothing here is tied to specific hardware. Plain Python 3 and bash, no build step.
+
+[TuxThrottle](https://github.com/BeanGreen247/tuxthrottle), my laptop tuning app, bundles the performance part
+(launcher, diagnostics, competitive settings) on its Setup Games → osu!lazer page.
 
 Everything is reachable through one command, `osu-tools` (run it with no arguments for the list):
 
 | Who | Command | What it does |
 | --- | --- | --- |
-| Players | `osu-tools launch` | Run osu! with low-latency tweaks, restore the system afterwards ([details](#osu-lazer-launcher)) |
+| Players | `osu-tools launch` | Run osu! with low-latency tweaks, restore the system afterwards ([details](#low-latency-launcher-osu-lazer-launcher)) |
 | | `osu-tools diag` | Live dashboard of everything that adds latency, with what to change |
 | | `osu-tools settings` | Apply competitive `game.ini` / `framework.ini` settings, with backups |
 | | `osu-tools replay` | Unstable rate, hit-error graph and offset advice from your replays; pp; export |
@@ -39,7 +48,20 @@ view, `evtest` for `measure-dpi`, `ffprobe` (ffmpeg) for audio checks in `mapche
 backups, `pip install --user rosu-pp-py` for star rating and pp in `replay` and `mapcheck`, MangoHud only if
 you want the overlay. Every script also runs on its own (`python3 osu_replay.py ...`) from a git clone.
 
-## osu-lazer-launcher
+## Quick start
+
+```bash
+osu-tools launch                 # play with the low-latency tweaks
+osu-tools replay show            # how did my last play go? UR, early/late, offset advice
+osu-tools tap --seconds 10       # tapping speed test
+osu-tools input status           # is my tablet set up right?
+osu-tools mapcheck ~/my-mapset   # anything a modder would flag?
+osu-tools backup backup          # back up everything before trying something risky
+```
+
+## For players
+
+### Low-latency launcher: `osu-lazer-launcher`
 
 ```
 osu-lazer-launcher [run]        launch osu! with the tweaks
@@ -62,7 +84,7 @@ What `run` does, each one switchable in `~/.config/osu-lazer-launcher/config`:
 After changing audio settings, redo osu!'s offset calibration. If audio crackles, raise `AUDIO_QUANTUM`
 to 512 or `ALSA_PERIOD_FRAMES` to 256.
 
-## osu_lazer_diag.py
+### Latency dashboard: `osu-tools diag`
 
 Run `osu-lazer-launcher diag` in a terminal while osu! is open (`r` refresh, `p` pause, `s` save report,
 `q` quit), or `--once` / `--json`. It checks:
@@ -80,7 +102,7 @@ Run `osu-lazer-launcher diag` in a terminal while osu! is open (`r` refresh, `p`
   thread priorities
 - the launcher config
 
-## osu_lazer_settings.py
+### Competitive settings: `osu-tools settings`
 
 Close osu! first (it rewrites its settings on exit). Sets: background dim 100 %, blur / hit lighting /
 star fountains / beatmap skins, colours and hitsounds off, key overlay on, gameplay leaderboard off, mouse
@@ -88,12 +110,10 @@ buttons and wheel disabled in play, frame limiter Unlimited, fullscreen, multith
 up next to itself first.
 
 ```bash
-python3 osu_lazer_settings.py --dry-run   # show what would change
-python3 osu_lazer_settings.py             # apply
-python3 osu_lazer_settings.py --check     # exit 0 if already applied
+osu-tools settings --dry-run   # show what would change
+osu-tools settings             # apply
+osu-tools settings --check     # exit 0 if already applied
 ```
-
-## For players
 
 ### Replay analysis: `osu-tools replay`
 
@@ -209,6 +229,11 @@ osu-tools dev logs --errors -f  logs of your source build
 `--install-dotnet`, installs it per user into `~/.dotnet` using Microsoft's install script (no root).
 Debug builds keep their data in `~/.local/share/osu-development`, so your real osu! data is never touched.
 `pr` is useful for players too: it's how you test a fix before it's released.
+
+## Contributing
+
+Bug reports, feature ideas and pull requests are welcome, especially from other distros, desktops and tablet
+models. Run `ruff check .` and `python -m pytest` before sending a PR (CI runs both plus shellcheck).
 
 ## License
 
